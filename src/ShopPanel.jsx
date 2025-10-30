@@ -513,190 +513,191 @@ const CardToCardModal = ({
 
         try {
             const res = await axios.post(
-                "http://192.168.1.127:5000/api/upload-receipt",
+                "http://37.32.25.83:5000/api/upload-receipt", // آدرس جدید
                 formData
             );
-
-            if (res.data.success) {
-                showToast("✅ رسید پرداخت با موفقیت ارسال شد.", "success");
-                onUploadReceipt();
-                onClose();
-            } else {
-                showToast(res.data.error || "❌ خطا در ارسال رسید.", "error");
-            }
-        } catch (error) {
-            console.error(error);
-            showToast("❌ خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.", "error");
+            // ...
         }
-    };
+            if (res.data.success) {
+            showToast("✅ رسید پرداخت با موفقیت ارسال شد.", "success");
+            onUploadReceipt();
+            onClose();
+        } else {
+            showToast(res.data.error || "❌ خطا در ارسال رسید.", "error");
+        }
+    } catch (error) {
+        console.error(error);
+        showToast("❌ خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.", "error");
+    }
+};
 
-    return (
+return (
+    <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 60
+        }}
+        onClick={onClose}
+    >
         <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ scale: 0.8, y: -50 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            onClick={(e) => e.stopPropagation()}
             style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(0, 0, 0, 0.8)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 60
+                backgroundColor: isDarkMode ? "#1F2937" : "white",
+                padding: "2.5rem",
+                borderRadius: "1rem",
+                width: "90%",
+                maxWidth: "30rem",
+                boxShadow: "0 25px 50px rgba(0, 0, 0, 0.5)",
+                color: isDarkMode ? "white" : "black",
+                position: "relative",
+                border: isDarkMode ? `1px solid ${CARD_COLOR}` : "none"
             }}
-            onClick={onClose}
         >
-            <motion.div
-                initial={{ scale: 0.8, y: -50 }}
-                animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                onClick={(e) => e.stopPropagation()}
+            {/* دکمه بستن */}
+            <button
+                onClick={onClose}
                 style={{
-                    backgroundColor: isDarkMode ? "#1F2937" : "white",
-                    padding: "2.5rem",
-                    borderRadius: "1rem",
-                    width: "90%",
-                    maxWidth: "30rem",
-                    boxShadow: "0 25px 50px rgba(0, 0, 0, 0.5)",
-                    color: isDarkMode ? "white" : "black",
-                    position: "relative",
-                    border: isDarkMode ? `1px solid ${CARD_COLOR}` : "none"
+                    position: "absolute",
+                    top: "1rem",
+                    left: "1rem",
+                    background: "none",
+                    border: "none",
+                    color: isDarkMode ? "#A1A1AA" : "#6B7280",
+                    cursor: "pointer"
                 }}
             >
-                {/* دکمه بستن */}
-                <button
-                    onClick={onClose}
-                    style={{
-                        position: "absolute",
-                        top: "1rem",
-                        left: "1rem",
-                        background: "none",
-                        border: "none",
-                        color: isDarkMode ? "#A1A1AA" : "#6B7280",
-                        cursor: "pointer"
-                    }}
-                >
-                    <XCircle size={24} />
-                </button>
+                <XCircle size={24} />
+            </button>
 
-                <h3
+            <h3
+                style={{
+                    fontSize: "1.5rem",
+                    fontWeight: "bold",
+                    marginBottom: "1.5rem",
+                    color: CARD_COLOR,
+                    textAlign: "center"
+                }}
+            >
+                جزئیات پرداخت کارت به کارت
+            </h3>
+
+            {/* مبلغ سفارش */}
+            <p
+                style={{
+                    lineHeight: "1.6",
+                    marginBottom: "1.5rem",
+                    textAlign: "justify",
+                    color: isDarkMode ? "#E5E7EB" : "#4B5563"
+                }}
+            >
+                مبلغ سفارش:{" "}
+                <span style={{ fontWeight: "bold", color: "#EF4444" }}>
+                    {totalCartPrice.toLocaleString()} تومان
+                </span>
+            </p>
+
+            {/* کارت بانکی با افکت نئون */}
+            <BankInfoCard
+                cardHolderName={bankInfo.cardHolderName}
+                cardNumber={bankInfo.cardNumber}
+                expireDate={bankInfo.expireDate || "12/25"}
+                isDarkMode={isDarkMode}
+            />
+
+            {/* بخش آپلود و ارسال رسید */}
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.75rem",
+                    marginTop: "1.5rem"
+                }}
+            >
+                <label
+                    htmlFor="receipt-upload"
                     style={{
-                        fontSize: "1.5rem",
+                        padding: "0.75rem 1rem",
+                        borderRadius: "0.5rem",
+                        backgroundColor: CARD_COLOR,
+                        color: "white",
                         fontWeight: "bold",
-                        marginBottom: "1.5rem",
-                        color: CARD_COLOR,
-                        textAlign: "center"
-                    }}
-                >
-                    جزئیات پرداخت کارت به کارت
-                </h3>
-
-                {/* مبلغ سفارش */}
-                <p
-                    style={{
-                        lineHeight: "1.6",
-                        marginBottom: "1.5rem",
-                        textAlign: "justify",
-                        color: isDarkMode ? "#E5E7EB" : "#4B5563"
-                    }}
-                >
-                    مبلغ سفارش:{" "}
-                    <span style={{ fontWeight: "bold", color: "#EF4444" }}>
-                        {totalCartPrice.toLocaleString()} تومان
-                    </span>
-                </p>
-
-                {/* کارت بانکی با افکت نئون */}
-                <BankInfoCard
-                    cardHolderName={bankInfo.cardHolderName}
-                    cardNumber={bankInfo.cardNumber}
-                    expireDate={bankInfo.expireDate || "12/25"}
-                    isDarkMode={isDarkMode}
-                />
-
-                {/* بخش آپلود و ارسال رسید */}
-                <div
-                    style={{
+                        cursor: "pointer",
                         display: "flex",
-                        flexDirection: "column",
-                        gap: "0.75rem",
-                        marginTop: "1.5rem"
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "0.5rem",
+                        position: "relative",
+                        overflow: "hidden",
+                        boxShadow: "0 4px 10px rgba(4, 120, 87, 0.5)"
                     }}
                 >
-                    <label
-                        htmlFor="receipt-upload"
-                        style={{
-                            padding: "0.75rem 1rem",
-                            borderRadius: "0.5rem",
-                            backgroundColor: CARD_COLOR,
-                            color: "white",
-                            fontWeight: "bold",
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "0.5rem",
-                            position: "relative",
-                            overflow: "hidden",
-                            boxShadow: "0 4px 10px rgba(4, 120, 87, 0.5)"
-                        }}
-                    >
-                        <Upload size={20} />
-                        <span>
-                            {receiptFile
-                                ? `فایل انتخاب شده: ${receiptFile.name}`
-                                : "انتخاب فایل رسید پرداخت"}
-                        </span>
+                    <Upload size={20} />
+                    <span>
+                        {receiptFile
+                            ? `فایل انتخاب شده: ${receiptFile.name}`
+                            : "انتخاب فایل رسید پرداخت"}
+                    </span>
 
-                        <input
-                            ref={fileInputRef}
-                            id="receipt-upload"
-                            type="file"
-                            accept="image/*,.pdf"
-                            onChange={handleFileChange}
-                            style={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                width: "100%",
-                                height: "100%",
-                                opacity: 0,
-                                cursor: "pointer"
-                            }}
-                        />
-                    </label>
-
-                    <motion.button
-                        whileHover={{ scale: receiptFile ? 1.02 : 1 }}
-                        whileTap={{ scale: receiptFile ? 0.98 : 1 }}
-                        onClick={handleSubmit}
-                        disabled={!receiptFile}
+                    <input
+                        ref={fileInputRef}
+                        id="receipt-upload"
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={handleFileChange}
                         style={{
-                            padding: "0.75rem",
-                            borderRadius: "0.5rem",
-                            backgroundColor: "#10B981",
-                            color: "white",
-                            fontWeight: "bold",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "0.5rem",
-                            opacity: receiptFile ? 1 : 0.5,
-                            cursor: receiptFile ? "pointer" : "not-allowed",
-                            boxShadow: receiptFile
-                                ? "0 4px 10px rgba(16, 185, 129, 0.4)"
-                                : "none"
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "100%",
+                            opacity: 0,
+                            cursor: "pointer"
                         }}
-                    >
-                        <FileUp size={20} /> ارسال رسید پرداخت
-                    </motion.button>
-                </div>
-            </motion.div>
+                    />
+                </label>
+
+                <motion.button
+                    whileHover={{ scale: receiptFile ? 1.02 : 1 }}
+                    whileTap={{ scale: receiptFile ? 0.98 : 1 }}
+                    onClick={handleSubmit}
+                    disabled={!receiptFile}
+                    style={{
+                        padding: "0.75rem",
+                        borderRadius: "0.5rem",
+                        backgroundColor: "#10B981",
+                        color: "white",
+                        fontWeight: "bold",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "0.5rem",
+                        opacity: receiptFile ? 1 : 0.5,
+                        cursor: receiptFile ? "pointer" : "not-allowed",
+                        boxShadow: receiptFile
+                            ? "0 4px 10px rgba(16, 185, 129, 0.4)"
+                            : "none"
+                    }}
+                >
+                    <FileUp size={20} /> ارسال رسید پرداخت
+                </motion.button>
+            </div>
         </motion.div>
-    );
+    </motion.div>
+);
 };
 
 
@@ -888,7 +889,7 @@ const ShopPanel = () => {
     const fetchProducts = useCallback(async () => {
         setIsLoading(true);
         try {
-            const res = await axios.get("http://192.168.1.127:5000/api/products");
+            const res = await axios.get("http://37.32.25.83:5000/api/products");
             setProducts(res.data);
             // 💡 چون addLog و showToast در اینجا استفاده می‌شوند، باید در useCallback این تابع به عنوان وابستگی باشند
             addLog("لیست محصولات از سرور دریافت شد.", "System");
@@ -913,7 +914,7 @@ const ShopPanel = () => {
         // ۲. واکشی محصولات و اتصال به وب‌سوکت
         fetchProducts(); // ✅ این تابع اکنون ثابت است و مشکلی ایجاد نمی‌کند.
 
-        const ws = new WebSocket(`ws://192.168.1.127:5000?phone=${phone}`);
+        const ws = new WebSocket(`ws://37.32.25.83:5000?phone=${phone}`);
 
         ws.onopen = () => {
             addLog("✅ اتصال به سرور برقرار شد.", "System");
@@ -1083,7 +1084,7 @@ const ShopPanel = () => {
 
         try {
             await axios.post(
-                `http://192.168.1.127:5000/api/${endpoint}`,
+                `http://37.32.25.83:5000/api/${endpoint}`,
                 { customer, cart, type }
             );
 
